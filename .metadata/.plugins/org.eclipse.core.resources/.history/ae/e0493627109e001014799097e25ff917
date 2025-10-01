@@ -1,0 +1,33 @@
+# ===============================
+# SERVER CONFIG
+# ===============================
+server.port=8080
+
+# ===============================
+# H2 Database Config
+# ===============================
+spring.datasource.url=jdbc:h2:mem:clinicdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+# ===============================
+# JPA / Hibernate Config
+# ===============================
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=none   # ใช้ schema.sql แทน auto-create
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+
+# ===============================
+# SQL Script (schema.sql + data.sql)
+# ===============================
+spring.sql.init.mode=always
+spring.sql.init.platform=h2
+
+# ===============================
+# H2 Console
+# ===============================
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console

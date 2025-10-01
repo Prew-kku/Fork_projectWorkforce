@@ -1,0 +1,47 @@
+package com.clinicappointment.entity;
+
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+public class Doctor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String username; // ใช้ login
+    private String password;
+    private String name;
+    private String specialization;
+
+    // ความสัมพันธ์ 1:1 → DoctorProfile
+    @OneToOne(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private DoctorProfile profile;
+
+    // ความสัมพันธ์ 1:N → Appointment
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private List<Appointment> appointments;
+
+    // Getter/Setter
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getSpecialization() { return specialization; }
+    public void setSpecialization(String specialization) { this.specialization = specialization; }
+
+    public DoctorProfile getProfile() { return profile; }
+    public void setProfile(DoctorProfile profile) { this.profile = profile; }
+
+    public List<Appointment> getAppointments() { return appointments; }
+    public void setAppointments(List<Appointment> appointments) { this.appointments = appointments; }
+}

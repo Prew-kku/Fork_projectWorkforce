@@ -1,0 +1,21 @@
+package com.clinicappointment.controller;
+
+import com.clinicappointment.repository.DoctorRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class DoctorController {
+    private final DoctorRepository doctorRepo;
+
+    public DoctorController(DoctorRepository doctorRepo) {
+        this.doctorRepo = doctorRepo;
+    }
+
+    @GetMapping("/doctors")
+    public String listDoctors(Model model) {
+        model.addAttribute("doctors", doctorRepo.findAll());
+        return "doctor-list";
+    }
+}

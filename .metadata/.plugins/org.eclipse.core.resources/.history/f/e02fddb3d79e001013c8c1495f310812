@@ -1,0 +1,19 @@
+-- Roles ก่อน
+INSERT INTO roles (id, name) VALUES (1, 'ROLE_PATIENT');
+INSERT INTO roles (id, name) VALUES (2, 'ROLE_DOCTOR');
+
+-- Users (password = 1234, BCrypt แล้ว)
+INSERT INTO users (id, username, password) VALUES 
+(1, 'patient1', '$2a$10$9wJtRO0gkH1DNF1zE0h9YOHM.7uS3nQK/6O1q6i0MQlktzWhSu3Ny'),
+(2, 'doctor1', '$2a$10$9wJtRO0gkH1DNF1zE0h9YOHM.7uS3nQK/6O1q6i0MQlktzWhSu3Ny');
+
+-- Mapping User → Role
+INSERT INTO user_roles (user_id, role_id) VALUES (1, 1); -- patient1 → ROLE_PATIENT
+INSERT INTO user_roles (user_id, role_id) VALUES (2, 2); -- doctor1 → ROLE_DOCTOR
+
+-- Mock doctor, patient
+INSERT INTO doctor (id, username, password, name, specialization) VALUES
+(1, 'doctor1', '1234', 'Dr. John Smith', 'Cardiology');
+
+INSERT INTO patient (id, username, password, name, phone) VALUES
+(1, 'patient1', '1234', 'Alice Patient', '0812345678');

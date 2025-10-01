@@ -1,0 +1,8 @@
+package com.clinicappointment.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.clinicappointment.entity.Doctor;
+
+public interface DoctorRepository extends JpaRepository<Doctor, Long> {
+    Doctor findByUsernameAndPassword(String username, String password);
+}

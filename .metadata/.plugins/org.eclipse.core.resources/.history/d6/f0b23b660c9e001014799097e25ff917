@@ -1,0 +1,5 @@
+package com.clinicappointment.service;
+
+public class CustomUserDetailsService {
+
+}

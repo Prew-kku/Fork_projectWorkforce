@@ -1,0 +1,69 @@
+package com.clinicappointment.controller;
+
+import com.clinicappointment.entity.Appointment;
+import com.clinicappointment.entity.Doctor;
+import com.clinicappointment.entity.Patient;
+import com.clinicappointment.repository.AppointmentRepository;
+import com.clinicappointment.repository.DoctorRepository;
+import com.clinicappointment.repository.PatientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Controller
+@RequestMapping("/patient")
+public class PatientController {
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private PatientRepository patientRepository;
+
+    //  หน้า Home ของ Patient
+    @GetMapping("/home")
+    public String home(Model model) {
+        List<Doctor> doctors = doctorRepository.findAll();
+        model.addAttribute("doctors", doctors);
+        return "patient-home"; // patient-home.html
+    }
+
+    //  จองคิว
+    @PostMapping("/book")
+    public String bookAppointment(@RequestParam Long doctorId,
+                                  @RequestParam String datetime,
+                                  Principal principal) {
+        // หา Patient จาก username ที่ login เข้ามา
+        Patient patient = patientRepository.findByUsername(principal.getName());
+
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow();
+
+        Appointment appt = new Appointment();
+        appt.setDoctor(doctor);
+        appt.setPatient(patient);
+        appt.setAppointmentDate(LocalDateTime.parse(datetime));
+        appt.setStatus("BOOKED");
+
+        appointmentRepository.save(appt);
+
+        return "redirect:/patient/appointments";
+    }
+
+    //  ดูรายการนัดของ Patient
+    @GetMapping("/appointments")
+    public String myAppointments(Model model, Principal principal) {
+        Patient patient = patientRepository.findByUsername(principal.getName());
+        List<Appointment> appointments = appointmentRepository.findByPatient(patient);
+
+        model.addAttribute("appointments", appointments);
+        return "appointment-list"; // appointment-list.html
+    }
+}
