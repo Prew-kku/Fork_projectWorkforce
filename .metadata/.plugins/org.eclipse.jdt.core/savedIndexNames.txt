@@ -50,7 +50,6 @@ INDEX VERSION 1.134+D:\projectWorkforce\.metadata\.plugins\org.eclipse.jdt.core
 1131300240.index
 3580263067.index
 3698617774.index
-3478652330.index
 536591242.index
 3614467166.index
 1874929222.index
