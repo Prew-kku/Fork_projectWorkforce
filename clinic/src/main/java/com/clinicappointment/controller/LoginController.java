@@ -25,7 +25,7 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showLogin() {
-        return "login"; // ไปหน้า login.html
+        return "login";
     }
 
     @PostMapping("/login")
@@ -34,25 +34,36 @@ public class LoginController {
                           HttpSession session,
                           Model model) {
 
+        // ✅ ตรวจสอบ input ว่างเปล่า
+        if (username == null || username.trim().isEmpty() || 
+            password == null || password.trim().isEmpty()) {
+            model.addAttribute("error", "Username and password are required");
+            return "login";
+        }
+
         // 1. ลองค้นหาผู้ใช้จากตาราง Patient
-        Optional<Patient> patientOpt = patientRepo.findByUser_Username(username);
+        Optional<Patient> patientOpt = patientRepo.findByUser_Username(username.trim());
         if (patientOpt.isPresent()) {
             Patient patient = patientOpt.get();
-            // ตรวจสอบรหัสผ่านจาก User entity ที่เชื่อมกัน
-            if (patient.getUser().getPassword().equals(password)) {
+            // ✅ ตรวจสอบว่า User object ไม่เป็น null
+            if (patient.getUser() != null && 
+                patient.getUser().getPassword().equals(password)) {
                 session.setAttribute("userId", patient.getId());
+                session.setAttribute("username", patient.getName());
                 session.setAttribute("role", "PATIENT");
                 return "redirect:/patient/home";
             }
         }
 
         // 2. ถ้าไม่เจอใน Patient, ลองค้นหาจากตาราง Doctor
-        Optional<Doctor> doctorOpt = doctorRepo.findByUser_Username(username);
+        Optional<Doctor> doctorOpt = doctorRepo.findByUser_Username(username.trim());
         if (doctorOpt.isPresent()) {
             Doctor doctor = doctorOpt.get();
-            // ตรวจสอบรหัสผ่านจาก User entity ที่เชื่อมกัน
-            if (doctor.getUser().getPassword().equals(password)) {
+            // ✅ ตรวจสอบว่า User object ไม่เป็น null
+            if (doctor.getUser() != null && 
+                doctor.getUser().getPassword().equals(password)) {
                 session.setAttribute("userId", doctor.getId());
+                session.setAttribute("username", doctor.getName());
                 session.setAttribute("role", "DOCTOR");
                 return "redirect:/doctor/home";
             }
@@ -65,7 +76,7 @@ public class LoginController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate(); // ล้างข้อมูล session ทั้งหมด
+        session.invalidate();
         return "redirect:/login";
     }
 }

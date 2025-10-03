@@ -1,4 +1,4 @@
-package com.clinicappointment.controller;
+/*package com.clinicappointment.controller;
 
 import com.clinicappointment.entity.Appointment;
 import com.clinicappointment.repository.AppointmentRepository;
@@ -42,4 +42,4 @@ public class AppointmentController {
         appointmentRepo.save(appt);
         return "redirect:/appointments";
     }
-}
+}*/

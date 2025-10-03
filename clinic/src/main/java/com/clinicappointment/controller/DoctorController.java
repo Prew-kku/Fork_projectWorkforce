@@ -29,43 +29,58 @@ public class DoctorController {
 
     @GetMapping("/home")
     public String home(Model model, HttpSession session) {
-        // 1. ตรวจสอบสิทธิ์จาก HttpSession
+        // 1. ✅ ตรวจสอบ Session อย่างละเอียด
         Long doctorId = (Long) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
 
-        // ถ้ายังไม่ได้ล็อกอิน หรือไม่ใช่หมอ ให้กลับไปหน้า login
         if (doctorId == null || !"DOCTOR".equals(role)) {
+            session.invalidate(); // ✅ ล้าง session ที่ไม่ถูกต้อง
             return "redirect:/login";
         }
 
-        // 2. ค้นหาข้อมูลหมอจาก ID ที่เก็บไว้ใน Session
+        // 2. ✅ ใช้ Optional pattern
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + doctorId));
+                .orElseGet(() -> {
+                    session.invalidate();
+                    return null;
+                });
 
-        // 3. ค้นหารายการนัดหมายทั้งหมดของหมอคนนี้
+        if (doctor == null) {
+            return "redirect:/login";
+        }
+
+        // 3. ค้นหารายการนัดหมาย
         List<Appointment> appointmentsFromDb = appointmentRepository.findByDoctor(doctor);
         
-        // 4. แปลงข้อมูลเป็น DTO สำหรับแสดงผล (เพื่อจัดรูปแบบวันที่)
+        // 4. แปลงเป็น DTO
         List<AppointmentView> appointmentViews = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
         for (Appointment appt : appointmentsFromDb) {
             AppointmentView view = new AppointmentView();
             view.setId(appt.getId());
-            view.setPatientName(appt.getPatient().getName());
-            view.setStatus(appt.getStatus());
+            
+            // ✅ ป้องกัน NullPointerException
+            if (appt.getPatient() != null) {
+                view.setPatientName(appt.getPatient().getName());
+            } else {
+                view.setPatientName("Unknown Patient");
+            }
+            
+            view.setStatus(appt.getStatus() != null ? appt.getStatus() : "N/A");
+            
             if (appt.getAppointmentDate() != null) {
                 view.setFormattedAppointmentDate(appt.getAppointmentDate().format(formatter));
             } else {
                 view.setFormattedAppointmentDate("N/A");
             }
+            
             appointmentViews.add(view);
         }
 
-        // 5. ส่งข้อมูลไปแสดงผลที่หน้าเว็บ
+        // 5. ส่งข้อมูลไป View
         model.addAttribute("doctorName", doctor.getName());
         model.addAttribute("appointments", appointmentViews);
         return "doctor-dashboard";
     }
 }
-
