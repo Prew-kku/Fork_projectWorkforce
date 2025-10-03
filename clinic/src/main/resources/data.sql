@@ -1,31 +1,28 @@
--- ล้างข้อมูลเก่าก่อน (เผื่อไว้)
+-- ล้างข้อมูลเก่าก่อน
 DELETE FROM user_roles;
-DELETE FROM appointment;
-DELETE FROM doctor_profile;
 DELETE FROM patient;
+DELETE FROM doctor_profile;
 DELETE FROM doctor;
 DELETE FROM users;
 DELETE FROM roles;
 
--- 1. Roles
--- ใช้ id 1 สำหรับ PATIENT และ 2 สำหรับ DOCTOR
-INSERT INTO roles (id, name) VALUES (1, 'ROLE_PATIENT');
-INSERT INTO roles (id, name) VALUES (2, 'ROLE_DOCTOR');
+-- 1. Roles (ให้ฐานข้อมูลจัดการ ID เอง)
+INSERT INTO roles (name) VALUES ('ROLE_PATIENT'), ('ROLE_DOCTOR');
 
--- 2. Users (ใช้รหัสผ่าน "1234" แบบ Plain text)
-INSERT INTO users (id, username, password) VALUES 
-(1, 'patient1', '1234'),
-(2, 'doctor1', '1234');
+-- 2. Users (ให้ฐานข้อมูลจัดการ ID เอง และเพิ่ม email)
+INSERT INTO users (username, password, email) VALUES 
+('patient1', '1234', 'patient1@example.com'),
+('doctor1', '1234', 'doctor1@example.com');
 
--- 3. User-Role Mapping
-INSERT INTO user_roles (user_id, role_id) VALUES (1, 1); -- patient1 คือ ROLE_PATIENT
-INSERT INTO user_roles (user_id, role_id) VALUES (2, 2); -- doctor1 คือ ROLE_DOCTOR
+-- 3. User-Role Mapping (ใช้ ID ที่ฐานข้อมูลสร้างขึ้น)
+-- สมมติว่าฐานข้อมูลจะสร้าง ID 1=PATIENT, 2=DOCTOR
+INSERT INTO user_roles (user_id, role_id) VALUES (1, 1), (2, 2);
 
--- 4. Doctor Profile Data (ผูกกับ user_id = 2)
-INSERT INTO doctor (id, name, specialization, user_id) VALUES
-(1, 'Dr. John Smith', 'Cardiology', 2);
+-- 4. Doctor Profile (ใช้ user_id ที่ถูกต้อง)
+INSERT INTO doctor (name, specialization, user_id) VALUES ('Dr. John Smith', 'Cardiology', 2);
 
--- 5. Patient Profile Data (ผูกกับ user_id = 1)
-INSERT INTO patient (id, name, phone, user_id) VALUES
-(1, 'Alice Patient', '0812345678', 1);
+-- 5. Patient Profile (ปรับปรุงใหม่!)
+-- เพิ่มค่า name_set เป็น false สำหรับผู้ใช้เริ่มต้น
+INSERT INTO patient (name, phone, user_id, name_set) VALUES 
+('patient1', '0812345678', 1, FALSE);
 

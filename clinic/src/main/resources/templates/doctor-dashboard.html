@@ -6,7 +6,7 @@
 </head>
 <body>
     <h2>Doctor Dashboard</h2>
-    <p>Welcome, <b th:text="${doctorName}">Doctor Name</b>!</p>
+    <p>Welcome, <span th:text="${doctorName}">Doctor</span>!</p>
     <a th:href="@{/logout}">Logout</a>
 
     <h3>Your Appointments</h3>
@@ -17,17 +17,31 @@
                 <th style="padding: 8px; text-align: left;">Patient Name</th>
                 <th style="padding: 8px; text-align: left;">Date & Time</th>
                 <th style="padding: 8px; text-align: left;">Status</th>
+                <th style="padding: 8px; text-align: left;">Symptoms</th>
+                <th style="padding: 8px; text-align: left;">Action</th> <!-- *** เพิ่มคอลัมน์ Action *** -->
             </tr>
         </thead>
         <tbody>
             <tr th:if="${#lists.isEmpty(appointments)}">
-                <td colspan="4" style="text-align: center; padding: 8px;">No appointments found.</td>
+                <td colspan="6" style="text-align: center; padding: 8px;">No appointments found.</td>
             </tr>
             <tr th:each="appt : ${appointments}">
                 <td style="padding: 8px;" th:text="${appt.id}"></td>
                 <td style="padding: 8px;" th:text="${appt.patientName}"></td>
                 <td style="padding: 8px;" th:text="${appt.formattedAppointmentDate}"></td>
                 <td style="padding: 8px;" th:text="${appt.status}"></td>
+                <td style="padding: 8px;" th:text="${appt.symptoms}"></td>
+                
+                <!-- *** เพิ่มส่วนสำหรับปุ่มอัปเดตสถานะ *** -->
+                <td style="padding: 8px;">
+                    <!-- แสดงฟอร์มพร้อมปุ่ม ถ้าสถานะยังไม่ใช่ 'COMPLETED' -->
+                    <form th:if="${appt.status != 'COMPLETED'}" th:action="@{/doctor/update-status}" method="post" style="margin:0;">
+                        <input type="hidden" name="appointmentId" th:value="${appt.id}" />
+                        <button type="submit">Mark as Complete</button>
+                    </form>
+                    <!-- แสดงข้อความ ถ้าสถานะเป็น 'COMPLETED' แล้ว -->
+                    <span th:if="${appt.status == 'COMPLETED'}">Completed</span>
+                </td>
             </tr>
         </tbody>
     </table>

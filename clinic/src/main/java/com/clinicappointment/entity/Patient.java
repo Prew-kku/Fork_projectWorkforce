@@ -13,8 +13,9 @@ public class Patient {
     private String name;
     private String phone;
     
-    // --- ส่วนที่สำคัญ ---
-    // เพิ่มความสัมพันธ์ OneToOne ไปยัง User entity
+    // --- ส่วนที่เพิ่มเข้ามา ---
+    private boolean nameSet = false;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
@@ -29,12 +30,13 @@ public class Patient {
     public void setName(String name) { this.name = name; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-    public List<Appointment> getAppointments() { return appointments; }
-    public void setAppointments(List<Appointment> appointments) { this.appointments = appointments; }
-    
-    // *** เพิ่ม Getter/Setter สำหรับ User ที่ขาดไป ***
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+    public List<Appointment> getAppointments() { return appointments; }
+    public void setAppointments(List<Appointment> appointments) { this.appointments = appointments; }
+
+    // *** เพิ่ม Getter/Setter สำหรับ nameSet ***
+    public boolean isNameSet() { return nameSet; }
+    public void setNameSet(boolean nameSet) { this.nameSet = nameSet; }
 }
 
-/*1212*/

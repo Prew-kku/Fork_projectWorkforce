@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Home</title>
+</head>
+<body>
+    <h2>Welcome, Patient!</h2>
+    <a th:href="@{/logout}">Logout</a> |
+    <a th:href="@{/patient/appointments}">My Appointments</a>
+
+    <h3>Choose Doctor and Book Appointment</h3>
+    <form th:action="@{/patient/book}" method="post">
+        <div>
+            <label>Select Doctor:</label><br>
+            <select name="doctorId" required>
+                <option th:each="doc : ${doctors}"
+                        th:value="${doc.id}"
+                        th:text="|${doc.name} - ${doc.specialization}|">
+                </option>
+            </select>
+        </div>
+        <div>
+            <label>Date & Time:</label><br>
+            <input type="datetime-local" name="datetime" required/>
+        </div>
+        
+        <!-- *** เพิ่มส่วนนี้เข้ามา *** -->
+        <div>
+            <label for="symptoms">อาการเจ็บป่วยเบื้องต้น (Initial Symptoms):</label><br>
+            <textarea id="symptoms" name="symptoms" rows="4" cols="50" required></textarea>
+        </div>
+        
+        <br>
+        <button type="submit">Book Appointment</button>
+    </form>
+</body>
+</html>
+

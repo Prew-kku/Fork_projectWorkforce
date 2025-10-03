@@ -1,5 +1,0 @@
-package com.clinicappointment.repository;
-
-public interface DoctorProfileRepository {
-
-}

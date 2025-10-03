@@ -5,34 +5,26 @@
     <title>My Appointments</title>
 </head>
 <body>
-<h2>My Appointments</h2>
-<a th:href="@{/patient/home}">Back to Home</a> |
-<a th:href="@{/logout}">Logout</a>
+    <h2>My Appointments</h2>
+    <a th:href="@{/patient/home}">Back to Home</a> |
+    <a th:href="@{/logout}">Logout</a>
 
-<br/><br/>
-
-<table border="1" style="width:100%; border-collapse: collapse;">
-     <thead>
-        <tr style="background-color:#f2f2f2;">
-            <th style="padding: 8px; text-align: left;">ID</th>
-            <th style="padding: 8px; text-align: left;">Doctor</th>
-            <th style="padding: 8px; text-align: left;">Specialization</th>
-            <th style="padding: 8px; text-align: left;">Date</th>
-            <th style="padding: 8px; text-align: left;">Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:if="${#lists.isEmpty(appointments)}">
-            <td colspan="5" style="text-align: center; padding: 8px;">You have no appointments.</td>
+    <table border="1" style="width:100%; margin-top: 1em;">
+        <tr>
+            <th>ID</th>
+            <th>Doctor</th>
+            <th>Date & Time</th>
+            <th>Status</th>
+            <th>Symptoms</th> <!-- *** เพิ่มคอลัมน์ *** -->
         </tr>
         <tr th:each="appt : ${appointments}">
-            <td style="padding: 8px;" th:text="${appt.id}"></td>
-            <td style="padding: 8px;" th:text="${appt.doctor.name}"></td>
-            <td style="padding: 8px;" th:text="${appt.doctor.specialization}"></td>
-            <td style="padding: 8px;" th:text="${#temporals.format(appt.appointmentDate, 'dd-MM-yyyy HH:mm')}"></td>
-            <td style="padding: 8px;" th:text="${appt.status}"></td>
+            <td th:text="${appt.id}"></td>
+            <td th:text="${appt.doctor.name}"></td>
+            <td th:text="${#temporals.format(appt.appointmentDate, 'dd-MM-yyyy HH:mm')}"></td>
+            <td th:text="${appt.status}"></td>
+            <td th:text="${appt.symptoms}"></td> <!-- *** แสดงข้อมูล *** -->
         </tr>
-    </tbody>
-</table>
+    </table>
 </body>
 </html>
+

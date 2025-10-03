@@ -10,6 +10,17 @@
     <input type="password" name="password" required/><br/>
     <button type="submit">Login</button>
 </form>
+
+<div>
+    <span>Don't have an account?</span>
+    <a th:href="@{/register}">Register as a new patient</a>
+</div>
+
+<!-- เพิ่มส่วนแสดงข้อความเมื่อสมัครสำเร็จ -->
+<div th:if="${param.success}" style="color: green;">
+    <p>Registration successful! Please log in.</p>
+</div>
 <p th:text="${error}"></p>
+
 </body>
 </html>
