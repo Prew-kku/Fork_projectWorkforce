@@ -8,7 +8,7 @@ DELETE FROM roles;
 
 -- 1. Roles (ให้ฐานข้อมูลจัดการ ID เอง)
 INSERT INTO roles (name) VALUES ('ROLE_PATIENT'), ('ROLE_DOCTOR');
-
+ON CONFLICT (name) DO NOTHING;
 
 -- 2. Users (ให้ฐานข้อมูลจัดการ ID เอง และเพิ่ม email)
 INSERT INTO users (username, password, email) VALUES 
