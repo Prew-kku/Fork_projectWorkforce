@@ -1,9 +1,0 @@
-package com.clinicappointment.repository;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.clinicappointment.entity.Patient;
-
-public interface PatientRepository extends JpaRepository<Patient, Long> {
-    Patient findByUsername(String username);
-}

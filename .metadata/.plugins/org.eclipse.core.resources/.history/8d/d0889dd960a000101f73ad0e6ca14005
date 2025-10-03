@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Dashboard</title>
+</head>
+<body>
+    <h2>Doctor Dashboard</h2>
+    <p>Welcome, <span th:text="${doctorName}">Doctor</span>!</p>
+    <a th:href="@{/logout}">Logout</a>
+
+    <h3>Your Appointments</h3>
+    <table border="1" style="width:100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color:#f2f2f2;">
+                <th style="padding: 8px; text-align: left;">ID</th>
+                <th style="padding: 8px; text-align: left;">Patient Name</th>
+                <th style="padding: 8px; text-align: left;">Date & Time</th>
+                <th style="padding: 8px; text-align: left;">Status</th>
+                <th style="padding: 8px; text-align: left;">Symptoms</th> <!-- *** เพิ่มคอลัมน์ *** -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(appointments)}">
+                <td colspan="5" style="text-align: center; padding: 8px;">No appointments found.</td>
+            </tr>
+            <tr th:each="appt : ${appointments}">
+                <td style="padding: 8px;" th:text="${appt.id}"></td>
+                <td style="padding: 8px;" th:text="${appt.patientName}"></td>
+                <td style="padding: 8px;" th:text="${appt.formattedAppointmentDate}"></td>
+                <td style="padding: 8px;" th:text="${appt.status}"></td>
+                <td style="padding: 8px;" th:text="${appt.symptoms}"></td> <!-- *** แสดงข้อมูล *** -->
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+

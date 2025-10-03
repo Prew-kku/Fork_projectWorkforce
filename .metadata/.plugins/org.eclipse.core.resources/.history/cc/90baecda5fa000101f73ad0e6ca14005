@@ -1,0 +1,5 @@
+package com.clinicappointment.controller;
+
+public class RegistrationController {
+
+}

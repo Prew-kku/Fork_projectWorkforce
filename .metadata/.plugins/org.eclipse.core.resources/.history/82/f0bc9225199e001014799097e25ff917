@@ -1,9 +1,0 @@
-INSERT INTO roles (id, name) VALUES (1, 'ROLE_PATIENT');
-INSERT INTO roles (id, name) VALUES (2, 'ROLE_DOCTOR');
-
--- password = 1234 (BCrypt แล้ว)
-INSERT INTO users (id, username, password) VALUES (1, 'patient1', '$2a$10$9wJtRO0gkH1DNF1zE0h9YOHM.7uS3nQK/6O1q6i0MQlktzWhSu3Ny');
-INSERT INTO users (id, username, password) VALUES (2, 'doctor1', '$2a$10$9wJtRO0gkH1DNF1zE0h9YOHM.7uS3nQK/6O1q6i0MQlktzWhSu3Ny');
-
-INSERT INTO user_roles (user_id, role_id) VALUES (1, 1); -- patient1 → ROLE_PATIENT
-INSERT INTO user_roles (user_id, role_id) VALUES (2, 2); -- doctor1 → ROLE_DOCTOR
