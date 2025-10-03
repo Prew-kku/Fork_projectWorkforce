@@ -1,4 +1,7 @@
--- ล้างข้อมูลเก่าก่อน
+/*
+ * 
+ * 
+ */-- ล้างข้อมูลเก่าก่อน
 DELETE FROM user_roles;
 DELETE FROM patient;
 DELETE FROM doctor_profile;
@@ -27,3 +30,4 @@ INSERT INTO doctor (name, specialization, user_id) VALUES ('Dr. John Smith', 'Ca
 INSERT INTO patient (name, phone, user_id, name_set) VALUES 
 ('patient1', '0812345678', 1, FALSE);
 
+*/
