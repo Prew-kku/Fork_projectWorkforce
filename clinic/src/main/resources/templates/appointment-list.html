@@ -3,28 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <title>My Appointments</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <!-- AOS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+
+    <style>
+        /* ✅ Animated Gradient Background */
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            color: #333;
+            background: linear-gradient(-45deg, #2196f3, #1976d2, #42a5f5, #0d47a1);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            transition: background 0.5s, color 0.5s;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ✅ Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(-45deg, #0d47a1, #1565c0, #1e88e5, #0d47a1);
+            background-size: 400% 400%;
+            animation: gradientMove 20s ease infinite;
+            color: #eee;
+        }
+
+        /* ✅ Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: #f1f1f1 !important;
+            position: relative;
+        }
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            left: 0;
+            bottom: -5px;
+            background: #fff;
+            transition: 0.3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* ✅ Table Style */
+        .table-container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            margin-top: 100px;
+        }
+        table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        thead {
+            background: #1565c0;
+            color: #fff;
+        }
+        tbody tr:hover {
+            background: #e3f2fd;
+            transition: 0.3s;
+        }
+
+        /* ✅ Dark Mode Table */
+        body.dark-mode .table-container {
+            background: #1c1c1c;
+            color: #eee;
+        }
+        body.dark-mode thead {
+            background: #0d47a1;
+        }
+        body.dark-mode tbody tr:hover {
+            background: #263238;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
 <body>
-    <h2>My Appointments</h2>
-    <a th:href="@{/patient/home}">Back to Home</a> |
-    <a th:href="@{/logout}">Logout</a>
 
-    <table border="1" style="width:100%; margin-top: 1em;">
-        <tr>
-            <th>ID</th>
-            <th>Doctor</th>
-            <th>Date & Time</th>
-            <th>Status</th>
-            <th>Symptoms</th> <!-- *** เพิ่มคอลัมน์ *** -->
-        </tr>
-        <tr th:each="appt : ${appointments}">
-            <td th:text="${appt.id}"></td>
-            <td th:text="${appt.doctor.name}"></td>
-            <td th:text="${#temporals.format(appt.appointmentDate, 'dd-MM-yyyy HH:mm')}"></td>
-            <td th:text="${appt.status}"></td>
-            <td th:text="${appt.symptoms}"></td> <!-- *** แสดงข้อมูล *** -->
-        </tr>
-    </table>
+<!-- ✅ Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/patient/home}">
+        <img src="@{images/DoctorHeart.png"} alt="My Clinic Logo" 
+         style="height: 45px; width: auto;">
+        </a>
+        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon bg-light rounded"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a th:href="@{/patient/home}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a th:href="@{/logout}" class="nav-link">Logout</a></li>
+                <li class="nav-item"><button class="btn btn-light btn-custom ms-2" onclick="toggleDarkMode()">🌙 Dark Mode</button></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ✅ Appointments Table -->
+<div class="container table-container animate__animated animate__fadeIn" data-aos="fade-up">
+    <h2 class="text-center mb-4 text-primary">📅 My Appointments</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-hover align-middle text-center">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Symptoms</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="appt : ${appointments}">
+                    <td th:text="${appt.id}"></td>
+                    <td th:text="${appt.doctor.name}"></td>
+                    <td th:text="${#temporals.format(appt.appointmentDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td>
+                        <span class="badge bg-success" th:if="${appt.status == 'Confirmed'}" th:text="${appt.status}"></span>
+                        <span class="badge bg-warning text-dark" th:if="${appt.status == 'Pending'}" th:text="${appt.status}"></span>
+                        <span class="badge bg-danger" th:if="${appt.status == 'Cancelled'}" th:text="${appt.status}"></span>
+                    </td>
+                    <td th:text="${appt.symptoms}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ✅ Footer -->
+<div class="footer text-white text-center mt-5 py-3" style="background:#1565c0;">
+    <p>&copy; 2025 My Clinic. All Rights Reserved.</p>
+</div>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- AOS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 1000, once: true });
+
+    // ✅ Dark Mode Toggle
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        let btn = document.querySelector('.btn-custom');
+        if (document.body.classList.contains('dark-mode')) {
+            btn.innerHTML = "☀️ Light Mode";
+        } else {
+            btn.innerHTML = "🌙 Dark Mode";
+        }
+    }
+</script>
+
 </body>
 </html>
-
