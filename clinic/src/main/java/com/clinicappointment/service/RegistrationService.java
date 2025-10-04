@@ -1,3 +1,4 @@
+// โค้ดสำหรับแทนที่ไฟล์ RegistrationService.java ทั้งหมด
 package com.clinicappointment.service;
 
 import com.clinicappointment.entity.Patient;
@@ -6,58 +7,61 @@ import com.clinicappointment.entity.User;
 import com.clinicappointment.repository.PatientRepository;
 import com.clinicappointment.repository.RoleRepository;
 import com.clinicappointment.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder; // 1. Import PasswordEncoder
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class RegistrationService {
-
     private final UserRepository userRepository;
-    private final PatientRepository patientRepository;
     private final RoleRepository roleRepository;
+    private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder; // 2. ประกาศตัวแปร PasswordEncoder
 
-    public RegistrationService(UserRepository userRepository, PatientRepository patientRepository, RoleRepository roleRepository) {
+    // 3. เพิ่ม PasswordEncoder เข้าไปใน Constructor
+    public RegistrationService(UserRepository userRepository, RoleRepository roleRepository,
+                               PatientRepository patientRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.patientRepository = patientRepository;
         this.roleRepository = roleRepository;
+        this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder; // 4. กำหนดค่า
     }
 
     @Transactional
     public void registerPatient(String username, String password, String phone, String email) {
-        // 1. ตรวจสอบว่า username ซ้ำหรือไม่
+        // ตรวจสอบ Username ซ้ำ
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalStateException("Username already exists!");
+            throw new IllegalArgumentException("Username already exists!");
         }
-
-        // *** เพิ่ม: ตรวจสอบว่า email ซ้ำหรือไม่ ***
+        // ตรวจสอบ Email ซ้ำ
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new IllegalStateException("Email is already in use!");
+            throw new IllegalArgumentException("Email already exists!");
         }
-        
-        // 2. ค้นหา Role "ROLE_PATIENT"
-        Role patientRole = roleRepository.findByName("ROLE_PATIENT")
-                .orElseThrow(() -> new RuntimeException("Error: Role 'ROLE_PATIENT' is not found in the database."));
 
-        // 3. สร้าง User object ใหม่
+        // ค้นหา Role ของ Patient
+        Role patientRole = roleRepository.findByName("ROLE_PATIENT")
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        Set<Role> roles = new HashSet<>();
+        roles.add(patientRole);
+
+        // สร้าง User object
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password);
+        // 5. เข้ารหัสรหัสผ่านก่อนตั้งค่า!
+        user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
-        user.setRoles(new HashSet<>(Collections.singletonList(patientRole)));
+        user.setRoles(roles);
 
-        // 4. สร้าง Patient object ใหม่
+        // สร้าง Patient object และผูกกับ User
         Patient patient = new Patient();
-        patient.setName(username);
         patient.setPhone(phone);
-        
-        // 5. เชื่อมโยง Patient กับ User
         patient.setUser(user);
-
-        // 6. บันทึกข้อมูล Patient
+        
+        // เราไม่จำเป็นต้อง save user ก่อน เพราะ Patient ถูกตั้งค่า cascade = CascadeType.ALL
+        // การ save Patient จะทำให้ User ถูก save ไปด้วยโดยอัตโนมัติ
         patientRepository.save(patient);
     }
 }
-

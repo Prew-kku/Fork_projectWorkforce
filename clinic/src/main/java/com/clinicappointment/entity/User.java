@@ -13,11 +13,11 @@ public class User {
     private String username;
     private String password;
 
-    // --- ส่วนที่เพิ่มเข้ามา ---
-    @Column(unique = true) // อีเมลต้องไม่ซ้ำกัน
+    @Column(unique = true)
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    // --- นี่คือส่วนที่แก้ไข ---
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
         name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -32,9 +32,8 @@ public class User {
     public void setUsername(String username) { this.username = username; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-    public String getEmail() { return email; } // เพิ่ม Getter
-    public void setEmail(String email) { this.email = email; } // เพิ่ม Setter
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
     public Set<Role> getRoles() { return roles; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
 }
-

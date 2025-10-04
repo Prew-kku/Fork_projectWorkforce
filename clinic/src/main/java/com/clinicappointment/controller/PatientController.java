@@ -53,6 +53,7 @@ public class PatientController {
         }
         
         return "patient-home";
+        
     }
 
     // *** เพิ่มเมธอดนี้เข้ามาใหม่ทั้งหมด ***

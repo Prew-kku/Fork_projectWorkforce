@@ -1,96 +1,73 @@
 package com.clinicappointment.config;
 
 import com.clinicappointment.entity.Doctor;
-import com.clinicappointment.entity.Patient;
 import com.clinicappointment.entity.Role;
 import com.clinicappointment.entity.User;
 import com.clinicappointment.repository.DoctorRepository;
-import com.clinicappointment.repository.PatientRepository;
 import com.clinicappointment.repository.RoleRepository;
 import com.clinicappointment.repository.UserRepository;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional; // <-- 1. Import Transactional
 
+import java.util.HashSet;
 import java.util.Set;
 
-/**
- * คลาสนี้จะทำงานตอนที่แอปพลิเคชันเริ่มทำงาน
- * เพื่อตรวจสอบและสร้างข้อมูลเริ่มต้นที่จำเป็นทั้งหมด
- */
 @Component
-@Profile({"prod", "default"}) // ✅ เปลี่ยนตรงนี้ - ให้ทำงานทั้งใน prod และ default
-public class DataInitializer implements ApplicationRunner {
+public class DataInitializer implements CommandLineRunner {
 
-    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final DoctorRepository doctorRepository;
-    private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(RoleRepository roleRepository, UserRepository userRepository, 
-                          DoctorRepository doctorRepository, PatientRepository patientRepository) {
-        this.roleRepository = roleRepository;
+    public DataInitializer(UserRepository userRepository, RoleRepository roleRepository,
+                           DoctorRepository doctorRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.doctorRepository = doctorRepository;
-        this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    @Transactional
-    public void run(ApplicationArguments args) throws Exception {
-        System.out.println("🔧 DataInitializer: Starting database initialization...");
-        
-        // --- 1. สร้าง Roles ---
+    @Transactional // <-- 2. เพิ่ม Annotation นี้
+    public void run(String... args) throws Exception {
+        // --- 1. สร้าง Roles พื้นฐาน (PATIENT, DOCTOR) ถ้ายังไม่มี ---
         Role patientRole = createRoleIfNotFound("ROLE_PATIENT");
         Role doctorRole = createRoleIfNotFound("ROLE_DOCTOR");
 
-        // --- 2. สร้างบัญชีหมอเริ่มต้น (ถ้ายังไม่มี) ---
+        // --- 2. สร้าง Doctor Account (doctor1) ถ้ายังไม่มี ---
         if (userRepository.findByUsername("doctor1").isEmpty()) {
             User doctorUser = new User();
             doctorUser.setUsername("doctor1");
-            doctorUser.setPassword("1234");
+            doctorUser.setPassword(passwordEncoder.encode("1234"));
             doctorUser.setEmail("doctor1@clinic.com");
-            doctorUser.setRoles(Set.of(doctorRole));
+
+            Set<Role> roles = new HashSet<>();
+            roles.add(doctorRole);
+            doctorUser.setRoles(roles);
+
+            // ไม่ต้อง save User ก่อน เพราะเราใช้ Cascade
+            // userRepository.save(doctorUser); 
 
             Doctor doctor = new Doctor();
             doctor.setName("Dr. John Smith");
             doctor.setSpecialization("Cardiology");
-            doctor.setUser(doctorUser);
+            doctor.setUser(doctorUser); 
 
             doctorRepository.save(doctor);
-            System.out.println("✅ Created default doctor: doctor1");
+            System.out.println("Created initial DOCTOR account: doctor1");
         }
-
-        // --- 3. สร้างบัญชีคนไข้เริ่มต้น (ถ้ายังไม่มี) ---
-        if (userRepository.findByUsername("patient1").isEmpty()) {
-            User patientUser = new User();
-            patientUser.setUsername("patient1");
-            patientUser.setPassword("1234");
-            patientUser.setEmail("patient1@clinic.com");
-            patientUser.setRoles(Set.of(patientRole));
-
-            Patient patient = new Patient();
-            patient.setName("patient1");
-            patient.setPhone("0812345678");
-            patient.setNameSet(false);
-            patient.setUser(patientUser);
-
-            patientRepository.save(patient);
-            System.out.println("✅ Created default patient: patient1");
-        }
-        
-        System.out.println("🎉 DataInitializer: Database initialization completed!");
     }
-
+    
+    // ไม่ต้องใส่ @Transactional ที่เมธอด private นี้แล้ว เพราะเมธอด run คลุมทั้งหมด
     private Role createRoleIfNotFound(String name) {
-        return roleRepository.findByName(name).orElseGet(() -> {
-            Role role = new Role();
-            role.setName(name);
-            Role savedRole = roleRepository.save(role);
-            System.out.println("✅ Created role: " + name);
-            return savedRole;
-        });
+        return roleRepository.findByName(name)
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setName(name);
+                    return roleRepository.save(newRole);
+                });
     }
 }
