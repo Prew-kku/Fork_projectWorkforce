@@ -28,3 +28,4 @@ INSERT INTO doctor (id, name, specialization, user_id) VALUES
 -- 5. Patient Profile Data (ผูกกับ user_id = 1)
 INSERT INTO patient (id, name, phone, user_id) VALUES
 (1, 'Alice Patient', '0812345678', 1);
+
