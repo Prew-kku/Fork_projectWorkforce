@@ -17,11 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 /**
- * คลาสนี้จะทำงานตอนที่แอปพลิเคชันเริ่มทำงานในโหมด "prod" (บน Render)
+ * คลาสนี้จะทำงานตอนที่แอปพลิเคชันเริ่มทำงาน
  * เพื่อตรวจสอบและสร้างข้อมูลเริ่มต้นที่จำเป็นทั้งหมด
  */
 @Component
-@Profile("prod")
+@Profile({"prod", "default"}) // ✅ เปลี่ยนตรงนี้ - ให้ทำงานทั้งใน prod และ default
 public class DataInitializer implements ApplicationRunner {
 
     private final RoleRepository roleRepository;
@@ -29,8 +29,8 @@ public class DataInitializer implements ApplicationRunner {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
 
-    // แก้ไข Constructor เพื่อรับ Repository ที่จำเป็นทั้งหมด
-    public DataInitializer(RoleRepository roleRepository, UserRepository userRepository, DoctorRepository doctorRepository, PatientRepository patientRepository) {
+    public DataInitializer(RoleRepository roleRepository, UserRepository userRepository, 
+                          DoctorRepository doctorRepository, PatientRepository patientRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.doctorRepository = doctorRepository;
@@ -38,8 +38,10 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     @Override
-    @Transactional // ทำให้การทำงานทั้งหมดนี้เป็นหนึ่งเดียว ถ้าพลาดจะย้อนกลับทั้งหมด
+    @Transactional
     public void run(ApplicationArguments args) throws Exception {
+        System.out.println("🔧 DataInitializer: Starting database initialization...");
+        
         // --- 1. สร้าง Roles ---
         Role patientRole = createRoleIfNotFound("ROLE_PATIENT");
         Role doctorRole = createRoleIfNotFound("ROLE_DOCTOR");
@@ -48,7 +50,7 @@ public class DataInitializer implements ApplicationRunner {
         if (userRepository.findByUsername("doctor1").isEmpty()) {
             User doctorUser = new User();
             doctorUser.setUsername("doctor1");
-            doctorUser.setPassword("1234"); // รหัสผ่านแบบ Plain text ตามโปรเจกต์ปัจจุบัน
+            doctorUser.setPassword("1234");
             doctorUser.setEmail("doctor1@clinic.com");
             doctorUser.setRoles(Set.of(doctorRole));
 
@@ -58,33 +60,37 @@ public class DataInitializer implements ApplicationRunner {
             doctor.setUser(doctorUser);
 
             doctorRepository.save(doctor);
+            System.out.println("✅ Created default doctor: doctor1");
         }
 
         // --- 3. สร้างบัญชีคนไข้เริ่มต้น (ถ้ายังไม่มี) ---
         if (userRepository.findByUsername("patient1").isEmpty()) {
             User patientUser = new User();
-            patientUser.setUsername("Test");
+            patientUser.setUsername("patient1");
             patientUser.setPassword("1234");
             patientUser.setEmail("patient1@clinic.com");
             patientUser.setRoles(Set.of(patientRole));
 
             Patient patient = new Patient();
-            patient.setName("Test"); // ชื่อเริ่มต้น (คนไข้ต้องไปตั้งชื่อเองทีหลัง)
+            patient.setName("patient1");
             patient.setPhone("0812345678");
-            patient.setNameSet(false); // ตั้งค่าให้ยังไม่ได้ตั้งชื่อ
+            patient.setNameSet(false);
             patient.setUser(patientUser);
 
             patientRepository.save(patient);
+            System.out.println("✅ Created default patient: patient1");
         }
+        
+        System.out.println("🎉 DataInitializer: Database initialization completed!");
     }
 
-    // เมธอดเสริมเพื่อช่วยให้โค้ดไม่ซ้ำซ้อน
     private Role createRoleIfNotFound(String name) {
         return roleRepository.findByName(name).orElseGet(() -> {
             Role role = new Role();
             role.setName(name);
-            return roleRepository.save(role);
+            Role savedRole = roleRepository.save(role);
+            System.out.println("✅ Created role: " + name);
+            return savedRole;
         });
     }
 }
-
