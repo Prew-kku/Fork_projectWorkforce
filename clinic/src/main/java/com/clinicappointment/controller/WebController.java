@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class WebController {
 
     /**
-     * เมธอดนี้จะทำงานเมื่อมีคนเข้ามาที่ URL ราก (root) ของเว็บ (เช่น http://localhost:8080/)
-     * และจะทำการ redirect ผู้ใช้ไปยังหน้า login ทันที
-     * @return คำสั่งให้ redirect ไปที่ /login
+     * เมธอดนี้จะทำงานเมื่อมีคนเข้ามาที่ URL ราก (/) ของเว็บ
+     * และจะแสดงหน้า Home หลักของเว็บไซต์ (home.html)
+     * @return ชื่อของ view ที่จะแสดงผล
      */
     @GetMapping("/")
-    public String redirectToLogin() {
-        return "redirect:/login";
+    public String showHomePage() {
+        return "home"; // ชี้ไปที่ home.html
     }
 }
 

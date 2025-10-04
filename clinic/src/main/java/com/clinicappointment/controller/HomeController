@@ -1,8 +1,0 @@
-@Controller
-public class HomeController {
-
-    @GetMapping("/")
-    public String home() {
-        return "home"; // ชี้ไปที่ home.html
-    }
-}
