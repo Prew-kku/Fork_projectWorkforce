@@ -3,55 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <title>Patient Home</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+
+    <style>
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            color: #333;
+            background: linear-gradient(-45deg, #2196f3, #1976d2, #42a5f5, #0d47a1);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            transition: background 0.5s, color 0.5s;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body.dark-mode {
+            background: linear-gradient(-45deg, #0d47a1, #1565c0, #1e88e5, #0d47a1);
+            background-size: 400% 400%;
+            animation: gradientMove 20s ease infinite;
+            color: #eee;
+        }
+        .navbar {
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .navbar-brand { color: #fff !important; font-weight: bold; }
+        .nav-link { color: #f1f1f1 !important; font-weight: 500; position: relative; }
+        .nav-link::after { content: ""; position: absolute; width: 0%; height: 2px; left: 0; bottom: -5px; background: #fff; transition: 0.3s; }
+        .nav-link:hover::after { width: 100%; }
+        .btn-toggle { background: #fff; color: #1565c0; border-radius: 20px; margin-left: 10px; padding: 6px 16px; font-weight: bold; transition: all 0.3s ease; }
+        .btn-toggle:hover { background: #bbdefb; transform: scale(1.1); }
+        .card { border: none; border-radius: 15px; }
+        .footer { margin-top: 50px; background: rgba(21,101,192,0.9); color: white; text-align: center; padding: 20px 0; }
+        
+        /* สไตล์สำหรับ Dark Mode ที่อาจต้องใช้ */
+        body.dark-mode .card { background-color: #1c1c1c; }
+        body.dark-mode .form-control { background-color: #263238; color: #eee; border-color: #455a64; }
+        body.dark-mode .form-control::placeholder { color: #90a4ae; }
+        body.dark-mode .form-select { background-color: #263238; color: #eee; border-color: #455a64; }
+
+    </style>
 </head>
 <body>
-    <!-- *** ส่วนที่ 1: จะแสดงเมื่อตั้งชื่อแล้ว (nameSet == true) *** -->
-    <div th:if="${patient.nameSet}">
-        <h2>Welcome, <span th:text="${patient.name}">Patient</span>!</h2>
-        <a th:href="@{/logout}">Logout</a> |
-        <a th:href="@{/patient/appointments}">My Appointments</a>
 
-        <h3>Choose Doctor and Book Appointment</h3>
-        <form th:action="@{/patient/book}" method="post">
-            <div>
-                <label>Select Doctor:</label><br>
-                <select name="doctorId" required>
-                    <option th:each="doc : ${doctors}"
-                            th:value="${doc.id}"
-                            th:text="|${doc.name} - ${doc.specialization}|">
-                    </option>
-                </select>
-            </div>
-            <div>
-                <label>Date & Time:</label><br>
-                <input type="datetime-local" name="datetime" required/>
-            </div>
-            <div>
-                <label for="symptoms">Initial Symptoms:</label><br>
-                <textarea id="symptoms" name="symptoms" rows="4" cols="50" required></textarea>
-            </div>
-            <br>
-            <button type="submit">Book Appointment</button>
-        </form>
+<nav class="navbar navbar-expand-lg fixed-top animate__animated animate__fadeInDown">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/patient/home}">
+             <img th:src="@{/images/DoctorHeart.png}" alt="My Clinic Logo" style="height: 45px; width: auto;">
+        </a>
+        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon bg-light rounded"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item">
+                    <span class="navbar-text text-white me-3">
+                        Welcome, <strong th:text="${patient.user.username}">Patient</strong>!
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/patient/appointments}" class="nav-link">My Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/logout}" class="nav-link">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-toggle mt-2 mt-lg-0" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container" style="margin-top: 120px;">
+
+    <div th:if="${!patient.isNameSet()}" class="card shadow-lg p-4 p-md-5 animate__animated animate__fadeInUp" data-aos="fade-up">
+        <div class="card-body text-center">
+            <h2 class="card-title text-primary mb-3">Welcome to My Clinic!</h2>
+            <p class="card-text text-muted mb-4">Please set your display name to continue.</p>
+            <form th:action="@{/patient/set-name}" method="post" class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <input type="text" name="newName" class="form-control form-control-lg" placeholder="Enter your full name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">Save Name</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- *** ส่วนที่ 2: จะแสดงเมื่อยังไม่ได้ตั้งชื่อ (nameSet == false) *** -->
-    <div th:unless="${patient.nameSet}">
-        <h2>Welcome! Please set your display name.</h2>
-        <p>This name will be shown to the doctor. You can only set it once.</p>
-        
-        <form th:action="@{/patient/set-name}" method="post">
-            <div>
-                <label for="newName">Your Full Name:</label><br>
-                <input type="text" id="newName" name="newName" size="50" required>
-            </div>
-            <br>
-            <button type="submit">Save Name</button>
-        </form>
-        <br>
-        <a th:href="@{/logout}">Logout</a>
+    <div th:if="${patient.isNameSet()}" class="card shadow-lg p-4 p-md-5 animate__animated animate__fadeInUp" data-aos="fade-up">
+        <div class="card-body">
+            <h2 class="card-title text-primary mb-4">Book an Appointment</h2>
+            <form th:action="@{/patient/book}" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="doctorId" class="form-label">Choose a Doctor</label>
+                        <select id="doctorId" name="doctorId" class="form-select form-select-lg" required>
+                            <option value="" disabled selected>-- Select Doctor --</option>
+                            <option th:each="doctor : ${doctors}" th:value="${doctor.id}" th:text="${doctor.name} + ' (' + ${doctor.specialization} + ')'"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="datetime" class="form-label">Appointment Date & Time</label>
+                        <input type="datetime-local" id="datetime" name="datetime" class="form-control form-control-lg" required>
+                    </div>
+                    <div class="col-12">
+                         <label for="symptoms" class="form-label">Symptoms</label>
+                         <textarea id="symptoms" name="symptoms" class="form-control" rows="3" placeholder="Describe your symptoms..." required></textarea>
+                    </div>
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">Book Now</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
+
+</div>
+<div class="footer animate__animated animate__fadeInUp">
+    <p>&copy; 2025 My Clinic. All Rights Reserved.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 1000, once: true });
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        let btn = document.querySelector('.btn-toggle');
+        if (document.body.classList.contains('dark-mode')) {
+            btn.innerHTML = "☀️ Light Mode";
+        } else {
+            btn.innerHTML = "🌙 Dark Mode";
+        }
+    }
+</script>
 
 </body>
 </html>
-
