@@ -1,0 +1,15 @@
+# Spring Datasource (PostgreSQL)
+spring.datasource.url=${JDBC_DATABASE_URL}
+
+# JPA / Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true
+
+# SQL Initialization
+spring.jpa.defer-datasource-initialization=true
+spring.sql.init.mode=always
+
+spring.h2.console.enabled=false
+
+server.port=${PORT:8080}

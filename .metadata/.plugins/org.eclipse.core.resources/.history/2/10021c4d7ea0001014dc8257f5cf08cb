@@ -1,0 +1,5 @@
+package com.clinicappointment.config;
+
+public class DataSourceConfig {
+
+}
