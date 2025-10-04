@@ -1,4 +1,4 @@
-GitRepositoriesView.GitDirectories=D\:\\projectWorkforce\\ClinicJustOneToOneAndOneToMany\\.git;
-GitRepositoriesView.GitDirectories.relative=ClinicJustOneToOneAndOneToMany\\.git;
+GitRepositoriesView.GitDirectories=D\:\\projectWorkforce\\ClinicJustOneToOneAndOneToMany\\.git;D\:\\projectWorkforce\\.git;
+GitRepositoriesView.GitDirectories.relative=ClinicJustOneToOneAndOneToMany\\.git;.git;
 core_autoIgnoreDerivedResources=false
 eclipse.preferences.version=1
