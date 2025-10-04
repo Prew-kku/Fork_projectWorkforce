@@ -1,26 +1,307 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Login</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Clinic Appointment Login</title>
+    <style>
+        :root {
+            --color1: 18,113,255;
+            --color2: 221,74,255;
+            --color3: 100,220,255;
+            --color4: 200,50,50;
+            --color5: 180,180,50;
+            --color-bg: #83e6f3;
+
+            --bubble-d: 4.5rem; /* 72px */
+            --bubble-r: 2.25rem; /* 36px */
+            --sparkle-d: 0.375rem; /* 6px */
+            --sparkle-r: 0.1875rem; /* 3px */
+        }
+
+        /* Body & Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .area{
+            background: #4e54c8;  
+            background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);
+        }
+
+        .circles{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .circles li{
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 60px;
+            height: 30px;
+            background-image: url('../static/images/DoctorHeart.png');
+            background-size: contain; 
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+        }
+
+        .circles li:nth-child(1){ left: 25%; width: 120px; height: 60px; animation-delay: 0s; }
+        .circles li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .circles li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .circles li:nth-child(4){ left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .circles li:nth-child(5){ left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .circles li:nth-child(6){ left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .circles li:nth-child(7){ left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .circles li:nth-child(8){ left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .circles li:nth-child(9){ left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .circles li:nth-child(10){ left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+        @keyframes animate {
+            0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
+
+        /* Button Effects */
+        .form-container button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(270deg,#4adede,#7873f5,#4adede); 
+            background-size: 600% 600%;
+            color:#fff;
+            font-size:16px;
+            cursor:pointer;
+            transition: transform 0.3s ease; 
+            position: relative; 
+            overflow: visible; 
+            z-index: 5;
+            animation: logoGradient 20s ease infinite;
+        }
+
+        .form-container button:hover { transform: scale(1.05); }
+        .form-container button:active { transform: scale(0.98); }
+
+        .form-container button::before,
+        .form-container button::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            content: '';
+            z-index: 6;
+            pointer-events: none;
+            will-change: transform, border-width, opacity, box-shadow;
+            transition: none;
+        }
+
+        .form-container button::before {
+            box-sizing: border-box;
+            margin: calc(var(--bubble-r) * -1); 
+            border: solid var(--bubble-r) #cc8ef5;
+            width: var(--bubble-d);
+            height: var(--bubble-d);
+            transform: scale(0);
+            border-color: #cc8ef5; 
+            z-index: 5;
+        }
+
+        .form-container button::after {
+            margin: calc(var(--sparkle-r) * -1); 
+            width: var(--sparkle-d); 
+            height: var(--sparkle-d);
+            opacity: 0; 
+            z-index: 6; 
+            box-shadow: 0 0 0 0 transparent; 
+        }
+
+        .form-container button:active::before {
+            animation: bubbleButton 0.4s cubic-bezier(.17, .89, .32, 1.49) forwards;
+        }
+
+        .form-container button:active::after {
+            animation: sparklesButton 0.01s ease-out forwards;
+        }
+
+        @keyframes bubbleButton {
+            15% { transform: scale(1); border-width: var(--bubble-r); border-color: #ffffff; }
+            30%, 100% { transform: scale(3); border-width: 0; }
+        }
+
+        @keyframes sparklesButton {
+            0%{ opacity: 1; box-shadow: 50px 17px 0 -1px #68a7fa, 47px 38px 0 -1px #68a7fa, 23px 56px 0 -1px #68a7fa, 0px 60px 0 -1px #68a7fa, -23px 56px 0 -1px #68a7fa, -47px 38px 0 -1px #68a7fa, -50px 17px 0 -1px #68a7fa, -47px -38px 0 -1px #68a7fa, -23px -56px 0 -1px #68a7fa, 0px -60px 0 -1px #68a7fa, 23px -56px 0 -1px #68a7fa, 47px -38px 0 -1px #68a7fa, 50px -17px 0 -1px #68a7fa, 0 0 0 0 transparent;}
+            60% { opacity: 0.5; box-shadow: 50px 17px 0 -1px #68a7fa, 47px 38px 0 -1px #68a7fa, 23px 56px 0 -1px #68a7fa, 0px 60px 0 -1px #68a7fa, -23px 56px 0 -1px #68a7fa, -47px 38px 0 -1px #68a7fa, -50px 17px 0 -1px #68a7fa, -47px -38px 0 -1px #68a7fa, -23px -56px 0 -1px #68a7fa, 0px -60px 0 -1px #68a7fa, 23px -56px 0 -1px #68a7fa, 47px -38px 0 -1px #68a7fa, 50px -17px 0 -1px #68a7fa, 0 0 0 0 transparent;}
+            100% { opacity: 0; box-shadow: 50px 17px 0 -1px transparent, 47px 38px 0 -1px transparent, 23px 56px 0 -1px transparent, 0px 60px 0 -1px transparent, -23px 56px 0 -1px transparent, -47px 38px 0 -1px transparent, -50px 17px 0 -1px transparent, -47px -38px 0 -1px transparent, -23px -56px 0 -1px transparent, 0px -60px 0 -1px transparent, 23px -56px 0 -1px transparent, 47px -38px 0 -1px transparent, 50px -17px 0 -1px transparent, 0 0 0 0 transparent;}
+        }
+
+        /* Logo */
+        .logo {
+            width: 300px;
+            height: 180px;
+            margin: 0 auto 20px;
+            -webkit-mask-image: url('../static/images/DoctorHeart.png');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            -webkit-mask-size: contain;
+            -webkit-mask-composite: destination-in;
+            mask-image: url('../static/images/DoctorHeart.png');
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+            mask-composite: intersect;
+            background: linear-gradient(270deg, #4adede, #7873f5, #4adede);
+            background-size: 600% 600%;
+            animation: logoGradient 20s ease infinite;
+        }
+
+        @keyframes logoGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background:
+            radial-gradient(circle at 20% 30%, rgba(var(--color1),0.5), transparent 50%),
+            radial-gradient(circle at 70% 50%, rgba(var(--color2),0.5), transparent 50%),
+            radial-gradient(circle at 40% 70%, rgba(var(--color3),0.5), transparent 50%);
+            background-size: 400% 400%;
+            animation: bgMorph 25s ease infinite;
+        }
+
+        @keyframes bgMorph {
+            0% { background-position: 0% 50%, 50% 0%, 100% 50%; }
+            50% { background-position: 100% 50%, 50% 100%, 0% 50%; }
+            100% { background-position: 0% 50%, 50% 0%, 100% 50%; }
+        }
+
+        .cursor-gradient {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgb(255, 255, 255), rgb(255, 255, 255));
+            filter: blur(80px);
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s ease, height 0.2s ease;
+        }
+
+        .form-container {
+            position: relative;
+            z-index: 2;
+            width: 320px;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        .form-container .error-msg{
+            position: absolute;
+            top: 38%;
+            left: 0%;
+            width: 100%;
+            color: red;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .form-container .success-msg{
+            position: absolute;
+            top: 38%;
+            left: 0;
+            width: 100%;
+            color: rgb(9, 150, 56);
+            z-index: 2;
+            text-align: center;
+        }
+
+        .form-container h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-container label {text-align: left; font-weight: bold; color: #333; display: block; margin-bottom: 0px;}
+        .form-container input { width: 100%; padding: 8px; margin: 8px 0 16px; border-radius: 8px; border: 1px solid #ccc; outline: none; }
+        .form-container a { display:block; text-align:center; color:#555; margin-top:10px; text-decoration:none; }
+        .form-container a:hover { color:#2684ff; }
+        .form-container span {display:block; text-align: center; color: #555; margin-top:20px; text-decoration:none;}
+        .form-container span:hover {color: #cc8ef5;}
+        p {
+            position: fixed;
+            bottom: 10px;
+            left: 50%; 
+            transform: translateX(-50%);
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #242424;
+            opacity: 0.8;
+        }
+    </style>
+</head>
 <body>
-<h2>Clinic Appointment Login</h2>
-<form th:action="@{/login}" method="post">
-    <label>Username:</label>
-    <input type="text" name="username" required/><br/>
-    <label>Password:</label>
-    <input type="password" name="password" required/><br/>
-    <button type="submit">Login</button>
-</form>
 
-<div>
-    <span>Don't have an account?</span>
-    <a th:href="@{/register}">Register as a new patient</a>
-</div>
+    <div class="background"></div>
+    <div class="cursor-gradient" id="cursorGradient"></div>
 
-<!-- เพิ่มส่วนแสดงข้อความเมื่อสมัครสำเร็จ -->
-<div th:if="${param.success}" style="color: green;">
-    <p>Registration successful! Please log in.</p>
-</div>
-<p th:text="${error}"></p>
+    <ul class="circles">
+        <li></li><li></li><li></li><li></li><li></li>
+        <li></li><li></li><li></li><li></li><li></li>
+    </ul>
 
+    <div class="form-container">
+        <div class="logo"></div>
+        <h2>Clinic Appointment Login</h2>
+
+        <div class="message-container">
+            <div th:if="${param.error}" class="error-msg">
+                <v>Invalid username or password</v>
+            </div>
+            <div th:if="${param.success}" class="success-msg">
+                <k>Registration successful! Please log in.</k>
+            </div>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required/>
+
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required/>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div>
+            <span>Don't have an account?</span>
+            <a th:href="@{/register}">Register as a new patient</a>
+        </div>
+    </div>
+
+    <div class="content flex">
+        <p>หมอนัดใจคลินิก.com</p>
+    </div>
+
+    <script src="cursor-gradient-register.js"></script>
 </body>
 </html>
