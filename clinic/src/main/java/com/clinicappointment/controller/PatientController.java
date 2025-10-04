@@ -120,5 +120,28 @@ public class PatientController {
         model.addAttribute("appointments", appointments);
         return "appointment-list";
     }
+    
+ // 1. เพิ่มเมธอดนี้เข้าไปที่ท้ายคลาส PatientController
+    @PostMapping("/appointments/cancel")
+    public String cancelAppointment(@RequestParam Long appointmentId, HttpSession session) {
+        // 2. ตรวจสอบสิทธิ์และดึงข้อมูลผู้ใช้จาก Session
+        Long patientId = (Long) session.getAttribute("userId");
+        if (patientId == null) {
+            return "redirect:/login";
+        }
+
+        // 3. ค้นหาการนัดหมาย และตรวจสอบว่าเป็นของคนไข้ที่ login อยู่จริง
+        appointmentRepository.findById(appointmentId).ifPresent(appointment -> {
+            // *** Security Check: ตรวจสอบให้แน่ใจว่าคนไข้เป็นเจ้าของการนัดหมายนี้จริงๆ ***
+            if (appointment.getPatient().getId().equals(patientId)) {
+                // 4. อัปเดตสถานะเป็น CANCELLED และบันทึก
+                appointment.setStatus("CANCELLED");
+                appointmentRepository.save(appointment);
+            }
+        });
+
+        // 5. กลับไปที่หน้ารายการนัดหมาย
+        return "redirect:/patient/appointments";
+    }
 }
 
