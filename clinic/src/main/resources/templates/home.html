@@ -198,21 +198,22 @@
 <div id="clinicCarousel" class="carousel slide container mt-5 pt-4 animate__animated animate__fadeIn" data-bs-ride="carousel">
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="../static/images/clinic3.gif" class="d-block w-100" alt="Clinic Image 1">
+            <!-- แก้ไข: ใช้ th:src="@{/images/...}" -->
+            <img th:src="@{/images/clinic3.gif}" class="d-block w-100" alt="Clinic Image 1">
             <div class="carousel-caption">
                 <h5>Welcome to Our Clinic</h5>
                 <p>Comprehensive Healthcare Services</p>
             </div>
         </div>
         <div class="carousel-item">
-            <img src="../static/images/clinic2.gif" class="d-block w-100" alt="Clinic Image 2">
+            <img th:src="@{/images/clinic2.gif}" class="d-block w-100" alt="Clinic Image 2">
             <div class="carousel-caption">
                 <h5>Online Appointment</h5>
                 <p>Book Anytime, Anywhere</p>
             </div>
         </div>
         <div class="carousel-item">
-            <img src="../static/images/clinic1.gif" class="d-block w-100" alt="Clinic Image 3">
+            <img th:src="@{/images/clinic1.gif}" class="d-block w-100" alt="Clinic Image 3">
             <div class="carousel-caption">
                 <h5>Expert Doctors</h5>
                 <p>Caring for You with Heart</p>
@@ -232,7 +233,7 @@
     <h2 class="mb-4 text-white" data-aos="fade-up">About Us</h2>
     <p data-aos="fade-up" data-aos-delay="100" class="text-light">
         Our clinic is committed to providing high-quality healthcare services 
-        with experienced doctors and modern medical equipment. 
+        with experienced doctors and modern medical equipment.
         We care about every detail for your health and satisfaction.
     </p>
 </section>
@@ -267,17 +268,18 @@
     <h2 class="text-white mb-4" data-aos="fade-up">Our Doctors</h2>
     <div class="row justify-content-center">
         <div class="col-md-3 col-6 mb-4" data-aos="flip-left" data-aos-delay="200">
-            <img src="../static/images/doctor1.jpg" alt="Doctor 1" class="doctor-img shadow">
+            <!-- แก้ไข: ใช้ th:src="@{/images/...}" -->
+            <img th:src="@{/images/doctor1.jpg}" alt="Doctor 1" class="doctor-img shadow">
             <h6 class="text-white">Dr. John Smith</h6>
             <p class="text-light">General Practitioner</p>
         </div>
         <div class="col-md-3 col-6 mb-4" data-aos="flip-left" data-aos-delay="400">
-            <img src="../static/images/doctor2.jpg" alt="Doctor 2" class="doctor-img shadow">
+            <img th:src="@{/images/doctor2.jpg}" alt="Doctor 2" class="doctor-img shadow">
             <h6 class="text-white">Dr. Emily Johnson</h6>
             <p class="text-light">Pediatrician</p>
         </div>
         <div class="col-md-3 col-6 mb-4" data-aos="flip-left" data-aos-delay="600">
-            <img src="../static/images/doctor3.jpg" alt="Doctor 3" class="doctor-img shadow">
+            <img th:src="@{/images/doctor3.jpg}" alt="Doctor 3" class="doctor-img shadow">
             <h6 class="text-white">Dr. Michael Lee</h6>
             <p class="text-light">Internist</p>
         </div>
@@ -325,3 +327,4 @@
 
 </body>
 </html>
+
