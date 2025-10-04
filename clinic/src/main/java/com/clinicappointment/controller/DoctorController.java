@@ -88,5 +88,26 @@ public class DoctorController {
         // 3. กลับไปที่หน้า Dashboard
         return "redirect:/doctor/home";
     }
+    
+    // เพิ่มเมธอดนี้ต่อจากเมธอด updateAppointmentStatus
+    @PostMapping("/appointments/cancel")
+    public String cancelAppointmentByDoctor(@RequestParam Long appointmentId, HttpSession session) {
+        Long doctorId = (Long) session.getAttribute("userId");
+        String role = (String) session.getAttribute("role");
+
+        if (doctorId == null || !"DOCTOR".equals(role)) {
+            return "redirect:/login";
+        }
+
+        appointmentRepository.findById(appointmentId).ifPresent(appointment -> {
+            // *** Security Check: ตรวจสอบว่าหมอเป็นเจ้าของการนัดหมายนี้ ***
+            if (appointment.getDoctor().getId().equals(doctorId)) {
+                appointment.setStatus("CANCELLED");
+                appointmentRepository.save(appointment);
+            }
+        });
+
+        return "redirect:/doctor/home";
+    }
 }
 
