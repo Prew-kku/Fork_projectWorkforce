@@ -51,7 +51,7 @@
             list-style: none;
             width: 60px;
             height: 30px;
-            background-image: url('../static/images/DoctorHeart.png');
+            background-image: url('/images/DoctorHeart.png');
             background-size: contain; 
             background-repeat: no-repeat;
             background-position: center;
@@ -153,12 +153,12 @@
             width: 300px;
             height: 180px;
             margin: 0 auto 20px;
-            -webkit-mask-image: url('../static/images/DoctorHeart.png');
+            -webkit-mask-image: url('/images/DoctorHeart.png');
             -webkit-mask-repeat: no-repeat;
             -webkit-mask-position: center;
             -webkit-mask-size: contain;
             -webkit-mask-composite: destination-in;
-            mask-image: url('../static/images/DoctorHeart.png');
+            mask-image: url('/images/DoctorHeart.png');
             mask-repeat: no-repeat;
             mask-position: center;
             mask-size: contain;
@@ -245,8 +245,7 @@
         .form-container input { width: 100%; padding: 8px; margin: 8px 0 16px; border-radius: 8px; border: 1px solid #ccc; outline: none; }
         .form-container a { display:block; text-align:center; color:#555; margin-top:10px; text-decoration:none; }
         .form-container a:hover { color:#2684ff; }
-        .form-container span {display:block; text-align: center; color: #555; margin-top:20px; text-decoration:none;}
-        .form-container span:hover {color: #cc8ef5;}
+        .form-container span {display:block; text-align: center; color: #555; margin-top:20px; text-decoration:none;}	
         p {
             position: fixed;
             bottom: 10px;
@@ -256,6 +255,17 @@
             letter-spacing: 1px;
             color: #242424;
             opacity: 0.8;
+        }
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 25px; /* Reduce padding on small screens */
+            }
+            h2 {
+                font-size: 1.5rem; /* Slightly smaller title on mobile */
+            }
+            input, button {
+                padding: 10px; /* Slightly smaller inputs and button */
+            }
         }
     </style>
 </head>
@@ -270,7 +280,9 @@
     </ul>
 
     <div class="form-container">
-        <div class="logo"></div>
+         <a th:href="@{/}" style="text-decoration: none; display: block;">
+            <div class="logo"></div>
+        </a>
         <h2>Clinic Appointment Login</h2>
 
         <div class="message-container">
@@ -293,13 +305,13 @@
         </form>
 
         <div>
-            <span>Don't have an account?</span>
+            <span >Don't have an account?</span>
             <a th:href="@{/register}">Register as a new patient</a>
         </div>
     </div>
 
     <div class="content flex">
-        <p>หมอนัดใจคลินิก.com</p>
+        <p>My Clinic</p>
     </div>
 
     <script src="cursor-gradient-register.js"></script>
