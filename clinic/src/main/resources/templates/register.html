@@ -74,7 +74,7 @@ body {
     position: absolute;
     display: block;
     list-style: none;
-    background-image: url('../static/images/DoctorHeart.png');
+    background-image: url('/images/DoctorHeart.png');
     background-size: contain; 
     background-repeat: no-repeat;
     background-position: center;
@@ -147,12 +147,13 @@ body {
     background: linear-gradient(270deg,#4adede,#7873f5,#4adede);
     background-size: 600% 600%;
     animation: logoGradient 20s ease infinite;
-    -webkit-mask-image: url('../static/images/DoctorHeart.png');
+    -webkit-mask-image: url('/images/DoctorHeart.png');
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center;
     -webkit-mask-size: contain;
     -webkit-mask-composite: destination-in;
-    mask-image: url('../static/images/DoctorHeart.png');
+    mask-image: url('/images/DoctorHeart.png');
+
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
@@ -195,6 +196,20 @@ body {
 @keyframes logoGradient { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
 
 p.footer { position: fixed; bottom: 10px; left:50%; transform:translateX(-50%); font-size:14px; letter-spacing:1px; color:#242424; opacity:0.8; }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 20px;
+                width: 95%;
+            }
+            .logo {
+                width: 200px;
+                height: 120px;
+            }
+            .form-container h2 {
+                font-size: 1.5rem;
+            }
+        }
 </style>
 </head>
 <body>
@@ -211,7 +226,9 @@ p.footer { position: fixed; bottom: 10px; left:50%; transform:translateX(-50%); 
 <div class="cursor-gradient" id="cursorGradient"></div>
 
 <div class="form-container">
-    <div class="logo"></div>
+   <a th:href="@{/}" style="text-decoration: none; display: block;">
+            <div class="logo"></div>
+            </a>
     <h2>Register Patient</h2>
     <div class="error-msg" th:if="${error}" th:text="${error}"></div>
 
@@ -227,7 +244,7 @@ p.footer { position: fixed; bottom: 10px; left:50%; transform:translateX(-50%); 
     <a th:href="@{/login}">Back to Login</a>
 </div>
 
-<p class="footer">หมอนัดใจคลินิก.com</p>
+<p class="footer">My Clinic</p>
 
 <script>
 const cursor = document.getElementById('cursorGradient');

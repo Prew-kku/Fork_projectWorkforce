@@ -46,15 +46,20 @@ public class DataInitializer implements CommandLineRunner {
         if (userRepository.findByUsername("doctor1").isEmpty()) {
             // ถ้ายังไม่มี ให้สร้างใหม่พร้อมรหัสผ่านที่เข้ารหัสแล้ว
             createDoctorAccount("doctor1", "1234", doctorRole);
+            createDoctorAccount("doctor2", "1234", doctorRole);
+            createDoctorAccount("doctor3", "1234", doctorRole);
         } else {
             // ถ้ามีอยู่แล้ว ให้ตรวจสอบและอัปเดตรหัสผ่านถ้ายังเป็น Plain Text
             updatePasswordIfNotEncoded("doctor1", "1234");
+            updatePasswordIfNotEncoded("doctor2", "1234");
+            updatePasswordIfNotEncoded("doctor3", "1234");
         }
 
         // --- จัดการบัญชี Patient เริ่มต้น ---
         // โค้ดนี้จะช่วย "ซ่อม" บัญชี patient ที่อาจมีรหัสผ่านเก่าอยู่
         updatePasswordIfNotEncoded("patient1", "1234");
         updatePasswordIfNotEncoded("patient2", "1234");
+        updatePasswordIfNotEncoded("Kren", "1234");
         // คุณสามารถเพิ่มบรรทัดสำหรับ patient คนอื่นๆ ที่มีปัญหาได้ที่นี่
     }
     
@@ -77,8 +82,17 @@ public class DataInitializer implements CommandLineRunner {
 
         Doctor doctor = new Doctor();
         doctor.setName("Dr. John Smith");
-        doctor.setSpecialization("Cardiology");
+        doctor.setSpecialization("General Practitioner");
         doctor.setUser(doctorUser); 
+        
+        doctor.setName("Dr. Emily Johnson");
+        doctor.setSpecialization("Pediatrician");
+        doctor.setUser(doctorUser); 
+        
+        doctor.setName("Dr. Michael Lee");
+        doctor.setSpecialization("Internist");
+        doctor.setUser(doctorUser); 
+
 
         doctorRepository.save(doctor);
         System.out.println("Created initial DOCTOR account: " + username);
