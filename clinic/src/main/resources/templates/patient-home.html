@@ -69,6 +69,13 @@
                         Welcome, <strong th:text="${patient.user.username}">Patient</strong>!
                     </span>
                 </li>
+                
+                <!-- === START: โค้ดที่เพิ่มเข้ามา === -->
+                <li class="nav-item">
+                    <a th:href="@{/profile/patient}" class="nav-link">My Profile</a>
+                </li>
+                <!-- === END: โค้ดที่เพิ่มเข้ามา === -->
+
                 <li class="nav-item">
                     <a th:href="@{/patient/appointments}" class="nav-link">My Appointments</a>
                 </li>
@@ -150,3 +157,4 @@
 
 </body>
 </html>
+

@@ -16,7 +16,12 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    // --- นี่คือส่วนที่แก้ไข ---
+    // === START: โค้ดที่เพิ่มเข้ามา ===
+    // เพิ่มคอลัมน์สำหรับเก็บสถานะการเปิดใช้งานบัญชี
+    // กำหนดค่าเริ่มต้นเป็น true เพื่อให้บัญชีที่สร้างใหม่ทั้งหมดใช้งานได้ทันที
+    private boolean enabled = true;
+    // === END: โค้ดที่เพิ่มเข้ามา ===
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
         name = "user_roles",
@@ -36,4 +41,9 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public Set<Role> getRoles() { return roles; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
+
+    // === START: Getter & Setter ที่เพิ่มเข้ามา ===
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    // === END: Getter & Setter ที่เพิ่มเข้ามา ===
 }
