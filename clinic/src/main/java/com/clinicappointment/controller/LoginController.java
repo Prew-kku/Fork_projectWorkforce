@@ -1,4 +1,3 @@
-// โค้ดสำหรับแทนที่ไฟล์ LoginController.java ทั้งหมด
 package com.clinicappointment.controller;
 
 import com.clinicappointment.entity.Doctor;
@@ -6,7 +5,7 @@ import com.clinicappointment.entity.Patient;
 import com.clinicappointment.repository.DoctorRepository;
 import com.clinicappointment.repository.PatientRepository;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.crypto.password.PasswordEncoder; // 1. Import PasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +18,12 @@ import java.util.Optional;
 public class LoginController {
     private final PatientRepository patientRepo;
     private final DoctorRepository doctorRepo;
-    private final PasswordEncoder passwordEncoder; // 2. ประกาศตัวแปร
+    private final PasswordEncoder passwordEncoder;
 
-    // 3. เพิ่ม PasswordEncoder เข้าไปใน Constructor
     public LoginController(PatientRepository patientRepo, DoctorRepository doctorRepo, PasswordEncoder passwordEncoder) {
         this.patientRepo = patientRepo;
         this.doctorRepo = doctorRepo;
-        this.passwordEncoder = passwordEncoder; // 4. กำหนดค่า
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/login")
@@ -51,15 +49,23 @@ public class LoginController {
         Optional<Patient> patientOpt = patientRepo.findByUser_Username(trimmedUsername);
         if (patientOpt.isPresent()) {
             Patient patient = patientOpt.get();
-            // 5. ใช้ passwordEncoder.matches() ในการตรวจสอบรหัสผ่าน
             if (patient.getUser() != null &&
                 passwordEncoder.matches(password, patient.getUser().getPassword())) {
 
-                // ตั้งชื่อใน session เป็น username ของ user แทนที่จะเป็น name ที่อาจจะยังไม่ตั้ง
-                session.setAttribute("userId", patient.getId());
-                session.setAttribute("username", patient.getUser().getUsername());
-                session.setAttribute("role", "PATIENT");
-                return "redirect:/patient/home";
+                // === START: โค้ดที่เพิ่มเข้ามา ===
+                // *** ตรวจสอบว่าบัญชีถูกเปิดใช้งานอยู่หรือไม่ ***
+                if (patient.getUser().isEnabled()) {
+                    // ถ้าเปิดใช้งานอยู่ ก็ให้ล็อกอินตามปกติ
+                    session.setAttribute("userId", patient.getId());
+                    session.setAttribute("username", patient.getUser().getUsername());
+                    session.setAttribute("role", "PATIENT");
+                    return "redirect:/patient/home";
+                } else {
+                    // ถ้าบัญชีถูกปิดใช้งาน ให้แสดงข้อความ Error
+                    model.addAttribute("error", "This account has been deactivated.");
+                    return "login";
+                }
+                // === END: โค้ดที่เพิ่มเข้ามา ===
             }
         }
 
@@ -67,13 +73,22 @@ public class LoginController {
         Optional<Doctor> doctorOpt = doctorRepo.findByUser_Username(trimmedUsername);
         if (doctorOpt.isPresent()) {
             Doctor doctor = doctorOpt.get();
-            // 5. ใช้ passwordEncoder.matches() ในการตรวจสอบรหัสผ่าน
             if (doctor.getUser() != null &&
                 passwordEncoder.matches(password, doctor.getUser().getPassword())) {
-                session.setAttribute("userId", doctor.getId());
-                session.setAttribute("username", doctor.getName());
-                session.setAttribute("role", "DOCTOR");
-                return "redirect:/doctor/home";
+
+                // === START: โค้ดที่เพิ่มเข้ามา ===
+                // *** ตรวจสอบว่าบัญชีถูกเปิดใช้งานอยู่หรือไม่ ***
+                if (doctor.getUser().isEnabled()) {
+                    session.setAttribute("userId", doctor.getId());
+                    session.setAttribute("username", doctor.getName());
+                    session.setAttribute("role", "DOCTOR");
+                    return "redirect:/doctor/home";
+                } else {
+                    // ถ้าบัญชีถูกปิดใช้งาน ให้แสดงข้อความ Error
+                    model.addAttribute("error", "This account has been deactivated.");
+                    return "login";
+                }
+                // === END: โค้ดที่เพิ่มเข้ามา ===
             }
         }
 
