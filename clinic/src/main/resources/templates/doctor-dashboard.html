@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Doctor Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
         body { padding: 20px; }
         .table-container {
@@ -67,5 +68,29 @@
             </table>
         </div>
     </div>
+    
+    <!-- === เพิ่ม JS ของ Toastify === -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    
+    <!-- === เพิ่ม Script สำหรับแสดง Toast === -->
+    <script th:if="${successMessage}">
+        Toastify({
+          text: "✅ [[${successMessage}]]",
+          duration: 3000,
+          close: true,
+          gravity: "top",
+          position: "center", // แสดงผลกลางหน้าจอ
+          backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+          stopOnFocus: true,
+          style: { // เพิ่มสไตล์ให้อ่านง่ายขึ้น
+              padding: "20px",
+              fontSize: "1.1rem",
+              fontWeight: "bold",
+              borderRadius: "10px",
+              boxShadow: "0 5px 15px rgba(0,0,0,0.2)"
+          }
+        }).showToast();
+    </script>
+    
 </body>
 </html>

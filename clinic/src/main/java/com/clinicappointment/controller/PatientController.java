@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; // === เพิ่ม import ===
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,25 +39,19 @@ public class PatientController {
             return "redirect:/login";
         }
         
-        // --- ส่วนที่แก้ไข ---
-        // 1. ดึงข้อมูล Patient ทั้งหมดมา
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
 
-        // 2. ส่ง patient object ทั้งก้อนไปที่หน้าเว็บ
         model.addAttribute("patient", patient);
         
-        // 3. ถ้ายังไม่ได้ตั้งชื่อ จะไม่ต้องส่งรายชื่อหมอไป
         if (patient.isNameSet()) {
             List<Doctor> doctors = doctorRepository.findAll();
             model.addAttribute("doctors", doctors);
         }
         
         return "patient-home";
-        
     }
 
-    // *** เพิ่มเมธอดนี้เข้ามาใหม่ทั้งหมด ***
     @PostMapping("/set-name")
     public String setName(@RequestParam String newName, HttpSession session) {
         Long patientId = (Long) session.getAttribute("userId");
@@ -67,19 +62,19 @@ public class PatientController {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
         
-        // อัปเดตชื่อ และตั้งค่าสถานะ nameSet เป็น true
         patient.setName(newName);
         patient.setNameSet(true);
-        patientRepository.save(patient); // บันทึกการเปลี่ยนแปลง
+        patientRepository.save(patient);
 
-        return "redirect:/patient/home"; // กลับไปหน้า home
+        return "redirect:/patient/home";
     }
 
     @PostMapping("/book")
     public String bookAppointment(@RequestParam Long doctorId,
                                   @RequestParam String datetime,
                                   @RequestParam String symptoms,
-                                  HttpSession session) {
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) { // === เพิ่ม RedirectAttributes ===
         Long patientId = (Long) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
 
@@ -101,6 +96,9 @@ public class PatientController {
         appt.setSymptoms(symptoms);
 
         appointmentRepository.save(appt);
+        
+        // === เพิ่มข้อความตอบกลับ ===
+        redirectAttributes.addFlashAttribute("successMessage", "Appointment booked successfully!");
 
         return "redirect:/patient/appointments";
     }
@@ -121,27 +119,25 @@ public class PatientController {
         return "appointment-list";
     }
     
- // 1. เพิ่มเมธอดนี้เข้าไปที่ท้ายคลาส PatientController
     @PostMapping("/appointments/cancel")
-    public String cancelAppointment(@RequestParam Long appointmentId, HttpSession session) {
-        // 2. ตรวจสอบสิทธิ์และดึงข้อมูลผู้ใช้จาก Session
+    public String cancelAppointment(@RequestParam Long appointmentId, 
+                                    HttpSession session, 
+                                    RedirectAttributes redirectAttributes) { // === เพิ่ม RedirectAttributes ===
         Long patientId = (Long) session.getAttribute("userId");
         if (patientId == null) {
             return "redirect:/login";
         }
 
-        // 3. ค้นหาการนัดหมาย และตรวจสอบว่าเป็นของคนไข้ที่ login อยู่จริง
         appointmentRepository.findById(appointmentId).ifPresent(appointment -> {
-            // *** Security Check: ตรวจสอบให้แน่ใจว่าคนไข้เป็นเจ้าของการนัดหมายนี้จริงๆ ***
             if (appointment.getPatient().getId().equals(patientId)) {
-                // 4. อัปเดตสถานะเป็น CANCELLED และบันทึก
                 appointment.setStatus("CANCELLED");
                 appointmentRepository.save(appointment);
+                
+                // === เพิ่มข้อความตอบกลับ ===
+                redirectAttributes.addFlashAttribute("successMessage", "Appointment has been cancelled.");
             }
         });
 
-        // 5. กลับไปที่หน้ารายการนัดหมาย
         return "redirect:/patient/appointments";
     }
 }
-

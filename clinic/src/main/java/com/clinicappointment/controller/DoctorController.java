@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; // === เพิ่ม import ===
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -65,10 +66,10 @@ public class DoctorController {
         return "doctor-dashboard";
     }
 
-    // *** เพิ่มเมธอดนี้เข้ามาใหม่ทั้งหมด ***
     @PostMapping("/update-status")
-    public String updateAppointmentStatus(@RequestParam Long appointmentId, HttpSession session) {
-        // 1. ตรวจสอบสิทธิ์ว่าใช่หมอที่ล็อกอินอยู่หรือไม่
+    public String updateAppointmentStatus(@RequestParam Long appointmentId, 
+                                          HttpSession session, 
+                                          RedirectAttributes redirectAttributes) { // === เพิ่ม RedirectAttributes ===
         Long doctorId = (Long) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
 
@@ -76,22 +77,23 @@ public class DoctorController {
             return "redirect:/login";
         }
 
-        // 2. ค้นหาการนัดหมายและอัปเดตสถานะ
         appointmentRepository.findById(appointmentId).ifPresent(appointment -> {
-            // ตรวจสอบให้แน่ใจว่าการนัดหมายนี้เป็นของหมอที่ล็อกอินอยู่
             if (appointment.getDoctor().getId().equals(doctorId)) {
                 appointment.setStatus("COMPLETED");
                 appointmentRepository.save(appointment);
+                
+                // === เพิ่มข้อความตอบกลับ ===
+                redirectAttributes.addFlashAttribute("successMessage", "Appointment status updated to COMPLETED.");
             }
         });
 
-        // 3. กลับไปที่หน้า Dashboard
         return "redirect:/doctor/home";
     }
     
-    // เพิ่มเมธอดนี้ต่อจากเมธอด updateAppointmentStatus
     @PostMapping("/appointments/cancel")
-    public String cancelAppointmentByDoctor(@RequestParam Long appointmentId, HttpSession session) {
+    public String cancelAppointmentByDoctor(@RequestParam Long appointmentId, 
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes) { // === เพิ่ม RedirectAttributes ===
         Long doctorId = (Long) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
 
@@ -100,14 +102,15 @@ public class DoctorController {
         }
 
         appointmentRepository.findById(appointmentId).ifPresent(appointment -> {
-            // *** Security Check: ตรวจสอบว่าหมอเป็นเจ้าของการนัดหมายนี้ ***
             if (appointment.getDoctor().getId().equals(doctorId)) {
                 appointment.setStatus("CANCELLED");
                 appointmentRepository.save(appointment);
+                
+                // === เพิ่มข้อความตอบกลับ ===
+                redirectAttributes.addFlashAttribute("successMessage", "Appointment has been cancelled.");
             }
         });
 
         return "redirect:/doctor/home";
     }
 }
-
