@@ -20,14 +20,14 @@
 /* Body */
 body {
     margin: 0;
-    padding: 0;
+    padding: 40px 0; /* เพิ่ม Padding ด้านบน-ล่าง เพื่อให้มีพื้นที่หายใจ */
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    /* overflow: hidden; */ /* === START: แก้ไขจุดที่ 1 (เอาออก) === */
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh; /* === START: แก้ไขจุดที่ 2 (เปลี่ยนจาก height เป็น min-height) === */
 }
 
 /* Background Morphing */
